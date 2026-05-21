@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dominion Majemu-Itura Aseyege — Xcel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink: #0a0a0a;
+    --paper: #f5f0e8;
+    --gold: #c8973a;
+    --gold-light: #e8b84b;
+    --cream: #faf7f2;
+    --muted: #6b6560;
+    --border: rgba(10,10,10,0.12);
+    --font-display: 'Bebas Neue', sans-serif;
+    --font-head: 'Syne', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--cream);
+    color: var(--ink);
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  .cursor {
+    width: 12px; height: 12px;
+    background: var(--gold);
+    border-radius: 50%;
+    position: fixed; top: 0; left: 0;
+    pointer-events: none;
+    z-index: 9999;
+    mix-blend-mode: multiply;
+  }
+  .cursor-ring {
+    width: 36px; height: 36px;
+    border: 1.5px solid var(--ink);
+    border-radius: 50%;
+    position: fixed; top: 0; left: 0;
+    pointer-events: none;
+    z-index: 9998;
+    transition: width 0.2s, height 0.2s, border-color 0.2s;
+  }
+
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 48px;
+    transition: background 0.3s, padding 0.3s;
+  }
+  nav.scrolled { background: var(--ink); padding: 14px 48px; }
+  nav.scrolled .nav-logo { color: var(--cream); }
+  nav.scrolled .nav-links a { color: var(--cream); }
+  .nav-logo {
+    font-family: var(--font-head);
+    font-weight: 800; font-size: 22px;
+    color: var(--ink); text-decoration: none;
+    letter-spacing: -0.5px; transition: color 0.3s;
+  }
+  .nav-links { display: flex; gap: 32px; list-style: none; }
+  .nav-links a {
+    font-family: var(--font-body);
+    font-size: 13px; font-weight: 500;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--ink); text-decoration: none; transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--gold); }
+
+  #hero {
+    min-height: 100vh;
+    display: grid; grid-template-columns: 1fr 1fr;
+    position: relative; overflow: hidden;
+    background: var(--ink);
+  }
+  .hero-left {
+    display: flex; flex-direction: column; justify-content: flex-end;
+    padding: 80px 48px 140px;
+    position: relative; z-index: 2;
+  }
+  .hero-eyebrow {
+    font-family: var(--font-body);
+    font-size: 12px; font-weight: 500;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 24px;
+  }
+  .hero-name {
+    font-family: var(--font-display);
+    font-size: clamp(72px, 9vw, 140px);
+    line-height: 0.92; color: var(--cream);
+    letter-spacing: 0.01em; margin-bottom: 8px;
+  }
+  .hero-name .accent { color: var(--gold); }
+  .hero-subtitle {
+    font-family: var(--font-head);
+    font-size: clamp(16px, 2vw, 22px);
+    font-weight: 400; color: rgba(245,240,232,0.6);
+    margin-bottom: 48px; line-height: 1.4;
+  }
+  .hero-tags { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 56px; }
+  .tag {
+    border: 1px solid rgba(200,151,58,0.4);
+    color: var(--gold); font-size: 12px; font-weight: 500;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 7px 14px; border-radius: 2px;
+  }
+  .hero-cta { display: flex; gap: 16px; align-items: center; }
+  .btn-primary {
+    background: var(--gold); color: var(--ink);
+    font-family: var(--font-head); font-weight: 700;
+    font-size: 14px; letter-spacing: 0.06em; text-transform: uppercase;
+    padding: 16px 32px; text-decoration: none; border: none; cursor: none;
+    transition: background 0.2s, transform 0.2s; display: inline-block;
+  }
+  .btn-primary:hover { background: var(--gold-light); transform: translateY(-2px); }
+  .btn-ghost {
+    color: var(--cream); font-family: var(--font-body);
+    font-size: 14px; font-weight: 400; text-decoration: none;
+    border-bottom: 1px solid rgba(245,240,232,0.3);
+    padding-bottom: 2px; transition: border-color 0.2s, color 0.2s;
+  }
+  .btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+  .hero-right { position: relative; overflow: hidden; }
+  .hero-photo {
+    width: 100%; height: 100%;
+    object-fit: cover; object-position: top center;
+    opacity: 0.85;
+  }
+  .hero-photo-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to right, var(--ink) 0%, transparent 30%),
+                linear-gradient(to top, var(--ink) 0%, transparent 25%);
+  }
+  .hero-right-label {
+    position: absolute; bottom: 72px; right: 48px;
+    font-family: var(--font-display); font-size: 15px;
+    letter-spacing: 0.25em; color: rgba(245,240,232,0.35);
+    writing-mode: vertical-rl; transform: rotate(180deg);
+  }
+  .hero-scroll {
+    position: absolute; bottom: 36px; left: 50%;
+    transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    color: rgba(245,240,232,0.4); font-size: 11px;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    font-family: var(--font-body); z-index: 10;
+  }
+  .scroll-line {
+    width: 1px; height: 48px;
+    background: rgba(200,151,58,0.5);
+    animation: scrollPulse 2s ease-in-out infinite;
+  }
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+  }
+  .hero-stat-strip {
+    position: absolute; bottom: 0; left: 0; right: 50%;
+    display: flex; border-top: 1px solid rgba(245,240,232,0.08); z-index: 5;
+  }
+  .hero-stat {
+    flex: 1; padding: 20px 24px;
+    border-right: 1px solid rgba(245,240,232,0.08);
+  }
+  .hero-stat:last-child { border-right: none; }
+  .stat-num { font-family: var(--font-display); font-size: 28px; color: var(--gold); display: block; }
+  .stat-label { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(245,240,232,0.4); }
+
+  section { padding: 112px 48px; }
+  .section-eyebrow {
+    font-size: 11px; letter-spacing: 0.25em; text-transform: uppercase;
+    color: var(--gold); font-weight: 500; margin-bottom: 16px;
+    display: flex; align-items: center; gap: 12px; font-family: var(--font-body);
+  }
+  .section-eyebrow::before { content: ''; display: block; width: 32px; height: 1px; background: var(--gold); }
+  .section-title {
+    font-family: var(--font-head);
+    font-size: clamp(36px, 5vw, 64px); font-weight: 800;
+    line-height: 1.05; letter-spacing: -0.03em; margin-bottom: 24px;
+  }
+  .section-body { font-size: 17px; line-height: 1.8; color: var(--muted); max-width: 560px; }
+
+  #about {
+    background: var(--paper);
+    display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center;
+  }
+  .about-quote {
+    font-family: var(--font-display);
+    font-size: clamp(28px, 4vw, 52px); line-height: 1.1;
+    color: var(--ink); padding-left: 28px; margin-bottom: 32px;
+    border-left: 4px solid var(--gold);
+  }
+  .about-links { display: flex; gap: 20px; margin-top: 40px; }
+  .about-link {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13px; font-weight: 500; color: var(--ink); text-decoration: none;
+    border-bottom: 1.5px solid var(--ink); padding-bottom: 2px;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .about-link:hover { color: var(--gold); border-color: var(--gold); }
+  .about-link svg { width: 14px; height: 14px; }
+
+  #pillars { background: var(--ink); color: var(--cream); }
+  #pillars .section-title { color: var(--cream); }
+  .pillars-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;
+    background: rgba(245,240,232,0.08); margin-top: 64px;
+    border: 1px solid rgba(245,240,232,0.08);
+  }
+  .pillar {
+    background: var(--ink); padding: 48px 40px;
+    transition: background 0.3s; position: relative; overflow: hidden;
+  }
+  .pillar::before {
+    content: attr(data-number); font-family: var(--font-display);
+    font-size: 120px; color: rgba(245,240,232,0.03);
+    position: absolute; top: -10px; right: 16px; line-height: 1; pointer-events: none;
+  }
+  .pillar:hover { background: rgba(200,151,58,0.06); }
+  .pillar-icon {
+    width: 48px; height: 48px; border: 1px solid rgba(200,151,58,0.3);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 28px; color: var(--gold); font-size: 20px;
+  }
+  .pillar-title { font-family: var(--font-head); font-size: 22px; font-weight: 700; color: var(--cream); margin-bottom: 16px; }
+  .pillar-text { font-size: 15px; line-height: 1.75; color: rgba(245,240,232,0.55); }
+  .pillar-org { margin-top: 24px; font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold); font-weight: 500; }
+
+  #web3 { background: var(--cream); display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 80px; align-items: start; }
+  .web3-badges { display: flex; flex-wrap: wrap; gap: 8px; margin: 32px 0; }
+  .badge { background: var(--ink); color: var(--cream); font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; padding: 6px 14px; border-radius: 1px; }
+  .web3-highlights { list-style: none; border-top: 1px solid var(--border); }
+  .web3-highlight { border-bottom: 1px solid var(--border); padding: 20px 0; display: flex; gap: 20px; align-items: flex-start; }
+  .hl-num { font-family: var(--font-display); font-size: 28px; color: var(--gold); min-width: 32px; line-height: 1; }
+  .hl-text { font-size: 15px; line-height: 1.6; color: var(--muted); padding-top: 4px; }
+  .web3-card { background: var(--ink); padding: 40px; color: var(--cream); position: sticky; top: 100px; }
+  .web3-card-label { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 16px; font-weight: 500; }
+  .web3-card-org { font-family: var(--font-head); font-size: 26px; font-weight: 800; color: var(--cream); margin-bottom: 12px; line-height: 1.1; }
+  .web3-card-desc { font-size: 14px; line-height: 1.7; color: rgba(245,240,232,0.6); margin-bottom: 28px; }
+  .web3-card-link { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; color: var(--gold); text-decoration: none; border-bottom: 1px solid rgba(200,151,58,0.3); padding-bottom: 2px; }
+
+  #ministry { background: var(--paper); position: relative; overflow: hidden; }
+  .ministry-inner { display: grid; grid-template-columns: 0.8fr 1.2fr; gap: 80px; align-items: start; }
+  .ministry-verse { font-family: var(--font-display); font-size: clamp(22px, 3vw, 38px); line-height: 1.15; color: var(--ink); margin-bottom: 12px; }
+  .ministry-ref { font-size: 12px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold); font-weight: 500; }
+  .ministry-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 40px; }
+  .mcard { border: 1px solid var(--border); padding: 28px 24px; background: var(--cream); transition: border-color 0.2s, box-shadow 0.2s; }
+  .mcard:hover { border-color: var(--gold); box-shadow: 0 4px 24px rgba(200,151,58,0.1); }
+  .mcard-title { font-family: var(--font-head); font-size: 16px; font-weight: 700; margin-bottom: 10px; }
+  .mcard-text { font-size: 14px; line-height: 1.65; color: var(--muted); }
+  .ministry-bg-text { position: absolute; bottom: -20px; right: -20px; font-family: var(--font-display); font-size: 200px; color: rgba(10,10,10,0.03); pointer-events: none; line-height: 1; user-select: none; }
+
+  #music { background: var(--ink); color: var(--cream); position: relative; overflow: hidden; }
+  .music-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 64px; gap: 40px; }
+  .music-header .section-title { color: var(--cream); margin-bottom: 0; }
+  .music-desc { font-size: 16px; line-height: 1.75; color: rgba(245,240,232,0.55); }
+  .music-roster { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: rgba(245,240,232,0.06); }
+  .music-card { background: #0d0d0d; padding: 40px; display: flex; flex-direction: column; min-height: 240px; position: relative; overflow: hidden; transition: background 0.3s; }
+  .music-card:hover { background: #141414; }
+  .music-card-label { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 16px; font-weight: 500; }
+  .music-card-name { font-family: var(--font-head); font-size: 32px; font-weight: 800; color: var(--cream); margin-bottom: 12px; line-height: 1.05; }
+  .music-card-text { font-size: 14px; line-height: 1.7; color: rgba(245,240,232,0.5); flex: 1; }
+  .music-card-accent { position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: var(--gold); transform: scaleX(0); transform-origin: left; transition: transform 0.4s ease; }
+  .music-card:hover .music-card-accent { transform: scaleX(1); }
+  .music-bottom { margin-top: 56px; display: flex; align-items: center; gap: 24px; padding-top: 32px; border-top: 1px solid rgba(245,240,232,0.08); }
+  .music-bottom-label { font-size: 13px; color: rgba(245,240,232,0.4); font-weight: 300; }
+  .music-bottom-name { font-family: var(--font-head); font-size: 16px; font-weight: 700; color: var(--cream); }
+
+  #projects { background: var(--cream); }
+  .projects-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 64px; gap: 40px; }
+  .projects-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .project-card { border: 1px solid var(--border); padding: 32px; background: var(--paper); position: relative; transition: transform 0.25s, border-color 0.25s; }
+  .project-card:hover { transform: translateY(-4px); border-color: var(--gold); }
+  .project-category { font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); font-weight: 500; margin-bottom: 16px; }
+  .project-name { font-family: var(--font-head); font-size: 20px; font-weight: 700; margin-bottom: 12px; line-height: 1.2; }
+  .project-desc { font-size: 14px; line-height: 1.7; color: var(--muted); margin-bottom: 24px; }
+  .project-tech { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tech-pill { font-size: 10px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; padding: 4px 10px; background: rgba(10,10,10,0.06); color: var(--muted); border-radius: 1px; }
+  .project-link { position: absolute; top: 24px; right: 24px; width: 32px; height: 32px; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; color: var(--muted); text-decoration: none; transition: background 0.2s, color 0.2s; font-size: 14px; }
+  .project-link:hover { background: var(--gold); color: var(--ink); border-color: var(--gold); }
+
+  #speaking { background: var(--paper); display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start; }
+  .speaking-right { padding-top: 80px; }
+  .talk-list { margin-top: 48px; }
+  .talk-item { border-bottom: 1px solid var(--border); padding: 24px 0; display: grid; grid-template-columns: auto 1fr; gap: 24px; align-items: start; transition: padding-left 0.2s; }
+  .talk-item:hover { padding-left: 8px; }
+  .talk-arrow { color: var(--gold); font-size: 18px; padding-top: 3px; font-family: var(--font-display); }
+  .talk-title { font-family: var(--font-head); font-size: 18px; font-weight: 700; margin-bottom: 4px; line-height: 1.25; }
+  .talk-meta { font-size: 13px; color: var(--muted); }
+  .speaking-quote { background: var(--ink); padding: 48px 40px; color: var(--cream); }
+  .sq-mark { font-family: var(--font-display); font-size: 80px; color: var(--gold); line-height: 0.8; margin-bottom: 20px; display: block; }
+  .sq-text { font-family: var(--font-head); font-size: 20px; font-weight: 400; line-height: 1.55; color: rgba(245,240,232,0.85); margin-bottom: 24px; }
+  .sq-author { font-size: 12px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold); }
+
+  #contact { background: var(--ink); color: var(--cream); text-align: center; padding: 120px 48px; position: relative; overflow: hidden; }
+  .contact-bg { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; overflow: hidden; }
+  .contact-bg-text { font-family: var(--font-display); font-size: 30vw; color: rgba(245,240,232,0.03); white-space: nowrap; line-height: 1; user-select: none; }
+  .contact-inner { position: relative; z-index: 2; }
+  .contact-eyebrow { font-size: 11px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold); margin-bottom: 24px; display: flex; align-items: center; justify-content: center; gap: 12px; }
+  .contact-eyebrow::before, .contact-eyebrow::after { content: ''; display: block; width: 32px; height: 1px; background: var(--gold); }
+  .contact-title { font-family: var(--font-display); font-size: clamp(60px, 10vw, 140px); line-height: 0.9; color: var(--cream); margin-bottom: 40px; }
+  .contact-title .gold { color: var(--gold); }
+  .contact-links { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; margin-bottom: 64px; }
+  .contact-link { display: flex; align-items: center; gap: 10px; border: 1px solid rgba(245,240,232,0.15); padding: 16px 28px; color: var(--cream); text-decoration: none; font-size: 13px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; font-family: var(--font-head); transition: border-color 0.2s, color 0.2s; }
+  .contact-link:hover { border-color: var(--gold); color: var(--gold); }
+  .contact-link.primary { background: var(--gold); border-color: var(--gold); color: var(--ink); }
+  .contact-link.primary:hover { background: var(--gold-light); }
+
+  footer { background: #050505; padding: 32px 48px; display: flex; align-items: center; justify-content: space-between; border-top: 1px solid rgba(245,240,232,0.05); }
+  .footer-logo { font-family: var(--font-head); font-weight: 800; font-size: 18px; color: var(--cream); }
+  .footer-copy { font-size: 12px; color: rgba(245,240,232,0.3); letter-spacing: 0.08em; }
+  .footer-links { display: flex; gap: 24px; }
+  .footer-links a { font-size: 12px; color: rgba(245,240,232,0.4); text-decoration: none; transition: color 0.2s; }
+  .footer-links a:hover { color: var(--gold); }
+
+  .fade-up { opacity: 0; transform: translateY(32px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .fade-up.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 900px) {
+    nav { padding: 20px 24px; }
+    nav.scrolled { padding: 14px 24px; }
+    .nav-links { display: none; }
+    section { padding: 72px 24px; }
+    #hero { grid-template-columns: 1fr; }
+    .hero-right { height: 400px; }
+    .hero-left { padding: 120px 24px 120px; }
+    .hero-stat-strip { left: 0; right: 0; }
+    #about { grid-template-columns: 1fr; gap: 48px; }
+    .pillars-grid { grid-template-columns: 1fr; }
+    #web3 { grid-template-columns: 1fr; gap: 48px; }
+    .web3-card { position: static; }
+    .ministry-inner { grid-template-columns: 1fr; gap: 48px; }
+    .ministry-cards { grid-template-columns: 1fr; }
+    .music-header { flex-direction: column; align-items: flex-start; }
+    .music-roster { grid-template-columns: 1fr; }
+    .projects-grid { grid-template-columns: 1fr; }
+    #speaking { grid-template-columns: 1fr; gap: 48px; }
+    .speaking-right { padding-top: 0; }
+    footer { flex-direction: column; gap: 16px; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<nav id="navbar">
+  <a href="#hero" class="nav-logo">XCEL</a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#web3">Web3</a></li>
+    <li><a href="#ministry">Ministry</a></li>
+    <li><a href="#music">Music</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#speaking">Speaking</a></li>
+    <li><a href="#contact">Connect</a></li>
+  </ul>
+</nav>
+
+<section id="hero">
+  <div class="hero-left">
+    <p class="hero-eyebrow">Partnerships · Ministry · Music · Tech</p>
+    <h1 class="hero-name">DOMIN<br><span class="accent">ION</span><br>XCEL</h1>
+    <p class="hero-subtitle">Building bridges across<br>technology, faith &amp; culture.</p>
+    <div class="hero-tags">
+      <span class="tag">Web3 Partnerships</span>
+      <span class="tag">Strategic Growth</span>
+      <span class="tag">Ministry Founder</span>
+      <span class="tag">Music Label</span>
+      <span class="tag">Lagos · Africa</span>
+    </div>
+    <div class="hero-cta">
+      <a href="#contact" class="btn-primary">Let's Connect</a>
+      <a href="#about" class="btn-ghost">Explore my work ↓</a>
+    </div>
+  </div>
+  <div class="hero-right">
+    <img src="" alt="Dominion Xcel" class="hero-photo" id="heroPhoto">
+    <div class="hero-photo-overlay"></div>
+    <span class="hero-right-label">DOMINION MAJEMU-ITURA ASEYEGE</span>
+  </div>
+  <div class="hero-scroll">
+    <div class="scroll-line"></div>
+    <span>Scroll</span>
+  </div>
+  <div class="hero-stat-strip">
+    <div class="hero-stat">
+      <span class="stat-num">4+</span>
+      <span class="stat-label">Years in Web3</span>
+    </div>
+    <div class="hero-stat">
+      <span class="stat-num">60+</span>
+      <span class="stat-label">Event Attendees</span>
+    </div>
+    <div class="hero-stat">
+      <span class="stat-num">3</span>
+      <span class="stat-label">Worlds Bridged</span>
+    </div>
+  </div>
+</section>
+
+<section id="about">
+  <div class="fade-up">
+    <span class="section-eyebrow">Who I Am</span>
+    <h2 class="section-title">One person.<br>Many mandates.</h2>
+    <p class="section-body">I'm Dominion Majemu-Itura Aseyege — known as Xcel. I operate at the intersection of technology, faith, and culture. By day, I drive partnerships and strategic growth at Web3Bridge, one of Africa's foremost blockchain developer training organizations. By conviction, I lead Chapel 121, a youth ministry in Lagos. By passion, I build music that carries purpose.</p>
+    <div class="about-links">
+      <a href="https://github.com/Codeinx" class="about-link" target="_blank">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.2 11.38.6.1.82-.26.82-.58v-2.04c-3.34.72-4.04-1.61-4.04-1.61-.54-1.38-1.32-1.74-1.32-1.74-1.08-.74.08-.72.08-.72 1.2.08 1.83 1.23 1.83 1.23 1.06 1.82 2.78 1.3 3.46.99.1-.77.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 3-.4c1.02 0 2.04.13 3 .4 2.28-1.55 3.29-1.23 3.29-1.23.66 1.66.24 2.88.12 3.18.77.84 1.23 1.91 1.23 3.22 0 4.61-2.81 5.63-5.48 5.93.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.82.58C20.56 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z"/></svg>
+        GitHub
+      </a>
+      <a href="https://x.com/MajemuItura" class="about-link" target="_blank">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        Twitter / X
+      </a>
+      <a href="https://web3bridgeafrica.com" class="about-link" target="_blank">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        Web3Bridge
+      </a>
+    </div>
+  </div>
+  <div class="fade-up">
+    <blockquote class="about-quote">"Remember your Creator in the days of your youth."</blockquote>
+    <p class="section-body">That verse from Ecclesiastes 12:1 is not just scripture to me — it's the mandate behind everything I build. Chapel 121 was founded on it. My work in Web3 is shaped by it. The music we release carries it.</p>
+    <p class="section-body" style="margin-top: 20px;">Whether I'm structuring a university blockchain partnership in Abuja, anchoring a community meetup in Lagos, or producing an event for 200+ youth, I bring the same energy: strategic, creative, and grounded in purpose.</p>
+  </div>
+</section>
+
+<section id="pillars">
+  <span class="section-eyebrow" style="color:var(--gold)">What I Do</span>
+  <h2 class="section-title">Three worlds.<br>One vision.</h2>
+  <div class="pillars-grid">
+    <div class="pillar fade-up" data-number="01">
+      <div class="pillar-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      </div>
+      <div class="pillar-title">Web3 &amp; Partnerships</div>
+      <p class="pillar-text">Driving strategic growth and partnership development for blockchain developer ecosystems across Africa. Building relationships that move the continent forward in Web3 education and adoption.</p>
+      <p class="pillar-org">Web3Bridge Africa</p>
+    </div>
+    <div class="pillar fade-up" data-number="02">
+      <div class="pillar-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      </div>
+      <div class="pillar-title">Ministry &amp; Community</div>
+      <p class="pillar-text">Founder of Chapel 121, the youth ministry of Chapel of Transfiguration (COTGLOBAL) in Ikorodu, Lagos. Building a generation of purpose-driven young people rooted in faith and excellence.</p>
+      <p class="pillar-org">Chapel 121 · COTGLOBAL</p>
+    </div>
+    <div class="pillar fade-up" data-number="03">
+      <div class="pillar-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+      </div>
+      <div class="pillar-title">Music &amp; Culture</div>
+      <p class="pillar-text">Running a music label that produces faith-driven music connecting with culture. Working with artists to release sounds that carry purpose — not just to the church, but to the world.</p>
+      <p class="pillar-org">Sovereign Records · Covenant Sound</p>
+    </div>
+  </div>
+</section>
+
+<section id="web3">
+  <div class="fade-up">
+    <span class="section-eyebrow">Web3 &amp; Blockchain</span>
+    <h2 class="section-title">Building Africa's<br>Web3 future.</h2>
+    <p class="section-body">As Partnerships &amp; Strategic Growth lead at Web3Bridge, I develop and manage relationships that expand the organization's reach across African universities, institutions, and the global blockchain ecosystem.</p>
+    <div class="web3-badges">
+      <span class="badge">Partnerships</span>
+      <span class="badge">Strategic Growth</span>
+      <span class="badge">Community Building</span>
+      <span class="badge">Event Production</span>
+      <span class="badge">Ethereum</span>
+      <span class="badge">DeFi</span>
+    </div>
+    <ul class="web3-highlights">
+      <li class="web3-highlight"><span class="hl-num">01</span><span class="hl-text">Anchored the Lagos Ethereum Community "Unwind, Connect &amp; Play" meetup with 60+ attendees at Web3Bridge Hub — designed the full event flow and authored the formal event report.</span></li>
+      <li class="web3-highlight"><span class="hl-num">02</span><span class="hl-text">Organized the LEC Hub meetup at LASUSTECH (April 2025), designing the run sheet, icebreakers, and build showcase from scratch.</span></li>
+      <li class="web3-highlight"><span class="hl-num">03</span><span class="hl-text">Developed a multi-year strategic plan and Year 1 roadmap for a flagship university partnership with FUT Minna (ICET) to maximize institutional reach.</span></li>
+      <li class="web3-highlight"><span class="hl-num">04</span><span class="hl-text">Positioned Web3Bridge as a strategic partner for Circle/Arc's African expansion through targeted executive outreach and partnership pitch development.</span></li>
+    </ul>
+  </div>
+  <div class="fade-up">
+    <div class="web3-card">
+      <p class="web3-card-label">Current Role</p>
+      <h3 class="web3-card-org">Web3Bridge Africa</h3>
+      <p class="web3-card-desc">One of Africa's leading blockchain and Web3 developer training organizations, focused on building technical talent across the continent.</p>
+      <a href="https://web3bridgeafrica.com" class="web3-card-link" target="_blank">Visit Web3Bridge →</a>
+    </div>
+  </div>
+</section>
+
+<section id="ministry">
+  <div class="ministry-inner">
+    <div class="fade-up">
+      <span class="section-eyebrow">Ministry</span>
+      <div class="ministry-verse">"Remember your Creator in the days of your youth."</div>
+      <p class="ministry-ref">Ecclesiastes 12:1 — The Mandate</p>
+      <p class="section-body" style="margin-top: 24px;">Chapel 121 is the youth ministry of Chapel of Transfiguration (COTGLOBAL) in Ikorodu, Lagos — a community I founded around one of the most urgent mandates in scripture.</p>
+    </div>
+    <div class="fade-up">
+      <span class="section-eyebrow">What We Build</span>
+      <h2 class="section-title" style="font-size: clamp(28px, 3.5vw, 46px);">Faith that moves.<br>Community that stays.</h2>
+      <p class="section-body">From large-scale conventions to intimate worship nights, Chapel 121 creates spaces where young people encounter God and find their purpose.</p>
+      <div class="ministry-cards">
+        <div class="mcard"><div class="mcard-title">Remember '26 Convention</div><p class="mcard-text">A multi-day youth convention (April 23–26, 2026) bringing together young people from across Lagos for teaching, worship, and community.</p></div>
+        <div class="mcard"><div class="mcard-title">Yovel Encounter</div><p class="mcard-text">A prophetic worship event (Dec 18, 2026) in collaboration with Yovel Worship — inviting artists and believers into an encounter with God.</p></div>
+        <div class="mcard"><div class="mcard-title">AITM Conference</div><p class="mcard-text">Apostles in the Marketplace — equipping young professionals to carry their faith into every sphere of influence.</p></div>
+        <div class="mcard"><div class="mcard-title">Content &amp; Media</div><p class="mcard-text">Ministry media strategy, event video production, social campaigns, and digital communications for COTGLOBAL.</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="ministry-bg-text">C121</div>
+</section>
+
+<section id="music">
+  <div class="music-header">
+    <div>
+      <span class="section-eyebrow" style="color:var(--gold)">Music Label</span>
+      <h2 class="section-title">Sound with<br>a soul.</h2>
+    </div>
+    <div style="max-width: 400px;">
+      <p class="music-desc">Running Sovereign Records / Covenant Sound — a faith-driven music label committed to producing music that doesn't just sound good, but means something.</p>
+    </div>
+  </div>
+  <div class="music-roster">
+    <div class="music-card fade-up">
+      <p class="music-card-label">Artist</p>
+      <h3 class="music-card-name">Divine Ikpemi</h3>
+      <p class="music-card-text">Gospel recording artist signed to the label. Known for anointed worship music bridging contemporary gospel with deep spiritual roots. Single "All Glory" in active promotion.</p>
+      <div class="music-card-accent"></div>
+    </div>
+    <div class="music-card fade-up">
+      <p class="music-card-label">What We Do</p>
+      <h3 class="music-card-name">Artist<br>Development</h3>
+      <p class="music-card-text">From recording and distribution strategy to Spotify for Artists management and content creation — we take artists from raw talent to released work that connects with real audiences.</p>
+      <div class="music-card-accent"></div>
+    </div>
+    <div class="music-card fade-up">
+      <p class="music-card-label">Distribution</p>
+      <h3 class="music-card-name">Global<br>Reach</h3>
+      <p class="music-card-text">Managing distribution partnerships across platforms — with a focus on getting faith-driven Nigerian music to diaspora and global audiences through strategic platform placement.</p>
+      <div class="music-card-accent"></div>
+    </div>
+    <div class="music-card fade-up">
+      <p class="music-card-label">Vision</p>
+      <h3 class="music-card-name">Sound &amp;<br>Covenant</h3>
+      <p class="music-card-text">We believe great music starts with covenant — with God, with the art, with the audience. Every release carries the intention to do more than entertain.</p>
+      <div class="music-card-accent"></div>
+    </div>
+  </div>
+  <div class="music-bottom">
+    <span class="music-bottom-label">Label names:</span>
+    <span class="music-bottom-name">Sovereign Records</span>
+    <span style="color:rgba(245,240,232,0.2)">—</span>
+    <span class="music-bottom-name">Covenant Sound</span>
+  </div>
+</section>
+
+<section id="projects">
+  <div class="projects-header fade-up">
+    <div>
+      <span class="section-eyebrow">Projects</span>
+      <h2 class="section-title">Built, shipped,<br>and still standing.</h2>
+    </div>
+    <p class="section-body" style="max-width: 360px;">From Next.js apps to event infrastructure — here's a selection of work I've built across my three worlds.</p>
+  </div>
+  <div class="projects-grid">
+    <div class="project-card fade-up">
+      <a href="#" class="project-link">↗</a>
+      <p class="project-category">Web3 · Event</p>
+      <h3 class="project-name">LEC Community Hub Meetup</h3>
+      <p class="project-desc">Full event production for the Lagos Ethereum Community at LASUSTECH — run sheet, build showcase, icebreaker design, and formal event report authored.</p>
+      <div class="project-tech"><span class="tech-pill">Event Production</span><span class="tech-pill">Ethereum</span><span class="tech-pill">Community</span></div>
+    </div>
+    <div class="project-card fade-up">
+      <a href="https://github.com/Codeinx" class="project-link" target="_blank">↗</a>
+      <p class="project-category">Ministry · Web</p>
+      <h3 class="project-name">OneThing-Reg (Remember '26)</h3>
+      <p class="project-desc">Full-stack Next.js App Router registration platform — unique attendance codes (OT-XXXXXX), Supabase DB, Resend email delivery, COTGLOBAL member toggle.</p>
+      <div class="project-tech"><span class="tech-pill">Next.js</span><span class="tech-pill">Supabase</span><span class="tech-pill">Resend</span><span class="tech-pill">App Router</span></div>
+    </div>
+    <div class="project-card fade-up">
+      <a href="#" class="project-link">↗</a>
+      <p class="project-category">Web3 · Strategy</p>
+      <h3 class="project-name">FUT Minna Partnership Plan</h3>
+      <p class="project-desc">Multi-year strategic plan and Year 1 roadmap for Web3Bridge's institutional partnership with FUT Minna (ICET), including legal review and event scheduling.</p>
+      <div class="project-tech"><span class="tech-pill">Strategy</span><span class="tech-pill">Partnerships</span><span class="tech-pill">Web3</span></div>
+    </div>
+    <div class="project-card fade-up">
+      <a href="https://github.com/Codeinx" class="project-link" target="_blank">↗</a>
+      <p class="project-category">Ministry · Web</p>
+      <h3 class="project-name">Chapel 121 Website</h3>
+      <p class="project-desc">Next.js site for Chapel 121 — full SEO/Open Graph configuration, Vercel deployment, and brand-aligned design for the ministry's digital presence.</p>
+      <div class="project-tech"><span class="tech-pill">Next.js</span><span class="tech-pill">Vercel</span><span class="tech-pill">SEO</span></div>
+    </div>
+    <div class="project-card fade-up">
+      <a href="#" class="project-link">↗</a>
+      <p class="project-category">Ministry · Events</p>
+      <h3 class="project-name">Remember '26 Convention</h3>
+      <p class="project-desc">Full production suite — announcement video scripts, invitation letters, speaker/panelist outreach, sponsorship proposals targeting PremiumTrust Bank, Malta Guinness &amp; Kuda MfB.</p>
+      <div class="project-tech"><span class="tech-pill">Event Production</span><span class="tech-pill">Sponsorship</span><span class="tech-pill">Ministry</span></div>
+    </div>
+    <div class="project-card fade-up">
+      <a href="#" class="project-link">↗</a>
+      <p class="project-category">Music · Label</p>
+      <h3 class="project-name">Divine Ikpemi — "All Glory"</h3>
+      <p class="project-desc">Managed release strategy — Spotify for Artists verification, distribution partnership review (OFFstep/ONErpm), and church announcement video script production.</p>
+      <div class="project-tech"><span class="tech-pill">Music Release</span><span class="tech-pill">Distribution</span><span class="tech-pill">Gospel</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="speaking">
+  <div class="fade-up">
+    <span class="section-eyebrow">Speaking</span>
+    <h2 class="section-title">Words that<br>build worlds.</h2>
+    <p class="section-body">I speak at the intersection of technology, faith, and African development — helping audiences understand how these forces aren't separate, but deeply connected.</p>
+    <div class="talk-list">
+      <div class="talk-item"><span class="talk-arrow">→</span><div><div class="talk-title">THE WEB3BRIDGE — From You Level to World Level</div><p class="talk-meta">Web3Bridge Speaking Engagement · 2025</p></div></div>
+      <div class="talk-item"><span class="talk-arrow">→</span><div><div class="talk-title">Building Community in Blockchain: The LEC Model</div><p class="talk-meta">Lagos Ethereum Community Meetup · April 2025</p></div></div>
+      <div class="talk-item"><span class="talk-arrow">→</span><div><div class="talk-title">Apostles in the Marketplace</div><p class="talk-meta">AITM Conference, Remember '26 Convention · April 2026</p></div></div>
+      <div class="talk-item"><span class="talk-arrow">→</span><div><div class="talk-title">Faith, Purpose &amp; the Builder's Mandate</div><p class="talk-meta">Chapel 121 · Ongoing</p></div></div>
+    </div>
+  </div>
+  <div class="speaking-right fade-up">
+    <div class="speaking-quote">
+      <span class="sq-mark">"</span>
+      <p class="sq-text">The most powerful thing you can do as a young person in Africa is to build at the intersection of your faith, your skill, and your community. That's where transformation happens.</p>
+      <span class="sq-author">— Dominion Xcel</span>
+    </div>
+    <div style="margin-top: 24px; border: 1px solid var(--border); padding: 32px;">
+      <p class="section-eyebrow" style="margin-bottom: 12px;">Book me to speak</p>
+      <p style="font-size: 15px; line-height: 1.7; color: var(--muted); margin-bottom: 24px;">Available for conferences, university events, church engagements, and blockchain ecosystem gatherings across Nigeria and Africa.</p>
+      <a href="#contact" class="btn-primary" style="font-size: 13px; padding: 14px 28px;">Get in touch →</a>
+    </div>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="contact-bg"><span class="contact-bg-text">XCEL</span></div>
+  <div class="contact-inner">
+    <p class="contact-eyebrow">Let's Build</p>
+    <h2 class="contact-title">CONNECT<br>WITH <span class="gold">ME.</span></h2>
+    <p style="font-size: 17px; color: rgba(245,240,232,0.55); max-width: 480px; margin: 0 auto 48px; line-height: 1.75;">Whether it's a Web3 partnership, a ministry collaboration, a speaking engagement, or a music opportunity — I want to hear from you.</p>
+    <div class="contact-links">
+      <a href="mailto:dominion@web3bridge.com" class="contact-link primary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        Send Email
+      </a>
+      <a href="https://x.com/MajemuItura" class="contact-link" target="_blank">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        Twitter / X
+      </a>
+      <a href="https://github.com/Codeinx" class="contact-link" target="_blank">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.2 11.38.6.1.82-.26.82-.58v-2.04c-3.34.72-4.04-1.61-4.04-1.61-.54-1.38-1.32-1.74-1.32-1.74-1.08-.74.08-.72.08-.72 1.2.08 1.83 1.23 1.83 1.23 1.06 1.82 2.78 1.3 3.46.99.1-.77.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 3-.4c1.02 0 2.04.13 3 .4 2.28-1.55 3.29-1.23 3.29-1.23.66 1.66.24 2.88.12 3.18.77.84 1.23 1.91 1.23 3.22 0 4.61-2.81 5.63-5.48 5.93.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.82.58C20.56 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z"/></svg>
+        GitHub
+      </a>
+      <a href="https://web3bridgeafrica.com" class="contact-link" target="_blank">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        Web3Bridge
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span class="footer-logo">XCEL</span>
+  <span class="footer-copy">© 2026 Dominion Majemu-Itura Aseyege. All rights reserved.</span>
+  <div class="footer-links">
+    <a href="#about">About</a>
+    <a href="#web3">Web3</a>
+    <a href="#ministry">Ministry</a>
+    <a href="#music">Music</a>
+    <a href="#contact">Contact</a>
+  </div>
+</footer>
+
+<script>
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cursor.style.transform = `translate(${mx - 6}px, ${my - 6}px)`;
+  });
+  (function animateRing() {
+    rx += (mx - rx - 18) * 0.12;
+    ry += (my - ry - 18) * 0.12;
+    ring.style.transform = `translate(${rx}px, ${ry}px)`;
+    requestAnimationFrame(animateRing);
+  })();
+
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 60);
+  });
+
+  const fadeEls = document.querySelectorAll('.fade-up');
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.12 });
+  fadeEls.forEach(el => obs.observe(el));
+
+  const heroPhoto = document.getElementById('heroPhoto');
+  const fileId = '1HtzKkLizSuTEkbLOUASfXMlOVXDTvhnA';
+  heroPhoto.src = `https://drive.google.com/thumbnail?id=${fileId}&sz=w800`;
+  heroPhoto.onerror = () => {
+    heroPhoto.src = 'https://placehold.co/800x1000/111/c8973a?text=XCEL';
+  };
+</script>
+</body>
+</html>
